@@ -54,7 +54,7 @@ const commonConfig = env => ({
         }
       ]
     }),
-    new EmojiFaviconPlugin('👩🏿‍💻')
+    new EmojiFaviconPlugin('📊')
   ]
 });
 
