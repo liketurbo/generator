@@ -2,7 +2,7 @@ import { h } from 'preact';
 import Navbar from 'react-bootstrap/Navbar';
 
 const Header = () => (
-  <Navbar>
+  <Navbar className="justify-content-center">
     <Navbar.Brand href="/">
       <img
         alt="logo"
