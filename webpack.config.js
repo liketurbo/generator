@@ -4,6 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const EmojiFaviconPlugin = require('emoji-favicon-webpack-plugin');
+const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
 
 const DEV_ENV = 'DEV_ENV';
 const PROD_ENV = 'PROD_ENV';
@@ -20,7 +21,11 @@ const commonConfig = env => ({
     rules: [{ test: /\.tsx?$/, use: 'ts-loader' }]
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js']
+    extensions: ['.tsx', '.ts', '.js'],
+    alias: {
+      react: 'preact/compat',
+      'react-dom': 'preact/compat'
+    }
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -39,6 +44,15 @@ const commonConfig = env => ({
               useShortDoctype: true
             }
           : false
+    }),
+    new HtmlWebpackExternalsPlugin({
+      externals: [
+        {
+          module: 'bootstrap',
+          entry:
+            'https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css'
+        }
+      ]
     }),
     new EmojiFaviconPlugin('👩🏿‍💻')
   ]
