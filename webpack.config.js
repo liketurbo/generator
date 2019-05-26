@@ -1,10 +1,12 @@
 const path = require('path');
+const glob = require('glob');
 const merge = require('webpack-merge');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const EmojiFaviconPlugin = require('emoji-favicon-webpack-plugin');
-const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
+const PurgecssPlugin = require('purgecss-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const DEV_ENV = 'DEV_ENV';
 const PROD_ENV = 'PROD_ENV';
@@ -18,7 +20,21 @@ const commonConfig = env => ({
     path: path.join(__dirname, 'dist')
   },
   module: {
-    rules: [{ test: /\.tsx?$/, use: 'ts-loader' }]
+    rules: [
+      { test: /\.tsx?$/, use: 'ts-loader' },
+      {
+        test: /\.css$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: env === DEV_ENV
+            }
+          }
+        ]
+      }
+    ]
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
@@ -45,16 +61,26 @@ const commonConfig = env => ({
             }
           : false
     }),
-    new HtmlWebpackExternalsPlugin({
-      externals: [
-        {
-          module: 'bootstrap',
-          entry:
-            'https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css'
-        }
+    new PurgecssPlugin({
+      paths: glob.sync(path.join(__dirname, '**', '*.tsx'), {
+        nodir: true
+      }),
+      whitelistPatterns: [
+        /^btn/,
+        /^alert/,
+        /^col-/,
+        /^offset-/,
+        /^navbar/,
+        /container/,
+        /row/,
+        /form-control/,
+        /a/
       ]
     }),
-    new EmojiFaviconPlugin('📊')
+    new EmojiFaviconPlugin('📊'),
+    new MiniCssExtractPlugin({
+      filename: '[contenthash].css'
+    })
   ]
 });
 
