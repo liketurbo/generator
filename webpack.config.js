@@ -7,6 +7,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const EmojiFaviconPlugin = require('emoji-favicon-webpack-plugin');
 const PurgecssPlugin = require('purgecss-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 const DEV_ENV = 'DEV_ENV';
 const PROD_ENV = 'PROD_ENV';
@@ -87,6 +88,11 @@ const commonConfig = env => ({
 const productionConfig = {
   optimization: {
     minimizer: [
+      new OptimizeCSSAssetsPlugin({
+        cssProcessorPluginOptions: {
+          preset: ['default', { discardComments: { removeAll: true } }]
+        }
+      }),
       new TerserPlugin({
         terserOptions: {
           output: {
